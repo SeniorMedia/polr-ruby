@@ -27,17 +27,17 @@ module Polr
     end
 
     def self.request path, params
-      Api.process { RestClient.get( Api::api_url(path.to_s), { params: params.merge(key: Api::api_key, response_type: :json), content_type: :json, accept: :json, timeout: 10 } ) }
+      RestClient.get( Api::api_url(path.to_s), { params: params.merge(key: Api::api_key, response_type: :json), content_type: :json, accept: :json, timeout: 10 } )
     end
   end
 
   # Actions to use
 
   def self.shorten url, **options
-    Api::request(:shorten, { url: url }.merge(options))
+    Api::process { Api::request(:shorten, { url: url }.merge(options)) }
   end
 
   def self.lookup url_ending, **options
-    Api::request(:lookup, { url_ending: url_ending }.merge(options))
+    Api::process { Api::request(:lookup, { url_ending: url_ending }.merge(options)) }
   end
 end
