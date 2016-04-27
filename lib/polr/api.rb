@@ -16,7 +16,7 @@ module Polr
     end
 
     def self.process
-      JSON.parse yield
+      JSON.parse(yield).with_indifferent_access
     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => e # API unreachable
       raise Polr::Error.new 'Polr API is unreachable'
     rescue RestClient::Exception => e # HTTP status error
