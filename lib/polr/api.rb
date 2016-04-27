@@ -7,16 +7,12 @@ module Polr
   Error = Class.new StandardError
 
   module Api
-    def self.api_url
-      %Q(#{Polr.configuration.api_url}/api/#{API_VERSION}/action/)
+    def self.api_url path = nil
+      %Q(#{Polr.configuration.api_url}/api/#{API_VERSION}/action/#{path})
     end
 
-    def self.resource
-      RestClient::Resource.new api_url, timeout: 10
-    end
-
-    def self.with_token **params
-      params.merge(key: Polr.configuration.api_key)
+    def self.api_key
+      Polr.configuration.api_key
     end
 
     def self.process
@@ -29,15 +25,19 @@ module Polr
     rescue JSON::ParserError => e # JSON error
       raise Polr::Error.new e.message
     end
+
+    def self.request path, params
+      Api.process { RestClient.get( Api::api_url(path.to_s), { params: params.merge(key: Api::api_key, response_type: :json), content_type: :json, accept: :json, timeout: 10 } ) }
+    end
   end
 
   # Actions to use
 
   def self.shorten url, **options
-    Api.process { Api.resource['shorten'].get( Api.with_token({ url: url }.merge(options)) ) }
+    Api::request(:shorten, { url: url }.merge(options))
   end
 
   def self.lookup url_ending, **options
-    Api.process { Api.resource['lookup'].get( Api.with_token({ url_ending: url_ending }.merge(options)) ) }
+    Api::request(:lookup, { url_ending: url_ending }.merge(options))
   end
 end
