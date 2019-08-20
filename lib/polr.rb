@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'polr/version'
 require 'polr/api'
 

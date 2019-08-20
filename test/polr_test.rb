@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class PolrTest < Minitest::Test
@@ -14,7 +16,7 @@ class PolrTest < Minitest::Test
   end
 
   def test_configuration
-    configuration = ::Polr::configuration
+    configuration = ::Polr.configuration
 
     assert_equal Polr::Configuration, configuration.class
     assert_equal '187.98.10.19', configuration.api_url
@@ -22,20 +24,22 @@ class PolrTest < Minitest::Test
   end
 
   def test_resource_is_set
-    assert_equal "#{::Polr::configuration::api_url}/api/#{::Polr::API_VERSION}/action/", ::Polr::Api::api_url
+    assert_equal "#{::Polr.configuration.api_url}/api/#{::Polr::API_VERSION}/action/", ::Polr::Api.api_url
   end
 
   def test_token
-    assert_equal Hash[key: ::Polr::configuration.api_key], ::Polr::Api::with_token
+    assert_equal ::Polr.configuration.api_key, ::Polr::Api.api_key
   end
 
   def test_shorten_method_return_error_on_invalid_server
-    exception = assert_raises(Polr::Error) { Polr::shorten("http://google.fr") }
-    assert_equal('undefined error', exception.message )
+    exception = assert_raises(Polr::Error) { Polr.shorten('http://google.fr') }
+
+    assert_equal('undefined error', exception.message)
   end
 
   def test_lookup_method_return_error_on_invalid_server
-    exception = assert_raises(Polr::Error) { Polr::lookup("d5r9") }
-    assert_equal('undefined error', exception.message )
+    exception = assert_raises(Polr::Error) { Polr.lookup('d5r9') }
+
+    assert_equal('undefined error', exception.message)
   end
 end
